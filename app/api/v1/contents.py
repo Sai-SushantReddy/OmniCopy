@@ -26,6 +26,16 @@ from app.services.content_service import (
     delete_content
 )
 
+from app.schemas.job import (
+    TransformationRequest,
+    JobResponse
+)
+
+from app.services.job_service import create_job
+
+from app.workers.tasks import (
+    process_transformation_job
+)
 
 router = APIRouter(
     prefix="/contents",
@@ -65,6 +75,42 @@ def list_contents(
         current_user.id
     )
 
+@router.post(
+    "/{content_id}/transform",
+    response_model=JobResponse,
+    status_code=status.HTTP_202_ACCEPTED
+)
+def transform_content(
+    content_id: int,
+    data: TransformationRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+
+    content = get_user_content(
+        db,
+        current_user.id,
+        content_id
+    )
+
+    if content is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Content not found"
+        )
+
+    job = create_job(
+        db,
+        current_user.id,
+        content.id,
+        data
+    )
+
+    process_transformation_job.delay(
+        job.id
+    )
+
+    return job
 
 @router.get(
     "/{content_id}",

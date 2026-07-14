@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.schemas.auth import (
     UserRegister,
-    UserLogin,
     UserResponse,
     TokenResponse
 )
