@@ -3,10 +3,15 @@ from datetime import datetime
 from pydantic import (
     BaseModel,
     ConfigDict,
-    Field
+    Field,
+    field_validator
 )
 
 from app.models.job import JobStatus
+
+from app.services.platform_service import (
+    SUPPORTED_PLATFORMS
+)
 
 
 class TransformationRequest(BaseModel):
@@ -19,6 +24,33 @@ class TransformationRequest(BaseModel):
         min_length=1,
         max_length=50
     )
+
+    @field_validator("platforms")
+    @classmethod
+    def validate_platforms(
+        cls,
+        platforms: list[str]
+    ) -> list[str]:
+
+        normalized_platforms = [
+            platform.lower().strip()
+            for platform in platforms
+        ]
+
+        invalid_platforms = (
+            set(normalized_platforms)
+            - SUPPORTED_PLATFORMS
+        )
+
+        if invalid_platforms:
+            raise ValueError(
+                "Unsupported platforms: "
+                + ", ".join(invalid_platforms)
+            )
+
+        return list(
+            dict.fromkeys(normalized_platforms)
+        )
 
 
 class JobResponse(BaseModel):
