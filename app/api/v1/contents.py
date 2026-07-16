@@ -9,6 +9,7 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 from app.api.dependencies import get_current_user
+from app.core.rate_limiter import check_rate_limit
 from app.db.session import get_db
 from app.models.user import User
 
@@ -98,7 +99,8 @@ def transform_content(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Content not found"
         )
-
+    
+    check_rate_limit(current_user.id)
     job = create_job(
         db,
         current_user.id,

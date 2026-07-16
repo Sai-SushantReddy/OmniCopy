@@ -5,8 +5,12 @@ from app.api.v1.users import router as users_router
 from app.api.v1.contents import router as contents_router
 from app.api.v1.jobs import router as jobs_router
 from app.api.v1.generated import (
-    router as generated_router
+    router as job_outputs_router
 )
+from app.api.v1.generated import (
+    regenerated_router as generated_router
+)
+
 app = FastAPI(
     title="OmniCopy API",
     version="1.0.0"
@@ -29,6 +33,11 @@ app.include_router(
 
 app.include_router(
     jobs_router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    job_outputs_router,
     prefix="/api/v1"
 )
 

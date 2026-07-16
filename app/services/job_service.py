@@ -8,6 +8,9 @@ from app.models.job import (
 
 from app.schemas.job import TransformationRequest
 
+import json
+
+from app.core.redis import redis_client
 
 def create_job(
     db: Session,
