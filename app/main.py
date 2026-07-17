@@ -10,6 +10,7 @@ from app.api.v1.generated import (
 from app.api.v1.generated import (
     regenerated_router as generated_router
 )
+from app.api.v1.system import sysrouter as system_router
 
 app = FastAPI(
     title="OmniCopy API",
@@ -46,8 +47,6 @@ app.include_router(
     prefix="/api/v1"
 )
 
-@app.get("/health")
-def health_check():
-    return {
-        "status": "healthy"
-    }
+
+app.include_router(
+    system_router)

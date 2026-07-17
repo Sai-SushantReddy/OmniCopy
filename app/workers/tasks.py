@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from app.core.logger import logger
 from app.db.session import SessionLocal
 
 from app.models.content import Content
@@ -40,6 +41,7 @@ def process_transformation_job(
         )
 
         if job is None:
+            logger.warning("Transformation job %s not found",job_id)
             return
 
         content = db.get(
@@ -52,6 +54,10 @@ def process_transformation_job(
                 "Source content not found"
             )
 
+        logger.info(
+            "Job %s processing",
+            job.id
+        )
         job.status = JobStatus.PROCESSING
         job.started_at = datetime.utcnow()
         job.error_message = None
@@ -64,6 +70,12 @@ def process_transformation_job(
         ]
 
         for platform in platforms:
+
+            logger.info(
+                "Generating %s content for job %s",
+                platform,
+                job.id
+            )
 
             generated_text = (
                 generate_platform_content(
@@ -86,6 +98,8 @@ def process_transformation_job(
 
         db.commit()
 
+        logger.info("Job %s completed successfully",job.id)
+
     except Exception as exc:
 
         db.rollback()
@@ -101,6 +115,11 @@ def process_transformation_job(
             job.error_message = str(exc)
 
             db.commit()
+
+        logger.exception(
+            "Job %s failed",
+            job_id
+        )
 
         raise
 
