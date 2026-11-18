@@ -6,6 +6,32 @@ OmniCopy allows users to create content once and automatically transform it into
 
 ---
 
+## Live Demo
+
+**API docs (Swagger UI): https://omnicopy-production.up.railway.app/docs**
+
+### Try it in 2 minutes
+1. Open the link above and use `POST /api/v1/auth/register` to create an account (click **Try it out**, fill in the example body, **Execute**).
+2. Use `POST /api/v1/auth/login` to get an access token, or click **Authorize** at the top right and enter your credentials.
+3. Create content with `POST /api/v1/contents`.
+4. Start a transformation with `POST /api/v1/contents/{id}/transform` (a background Celery worker calls the LLM).
+5. Fetch your content with `GET /api/v1/contents` to see the transformed result. Processing is asynchronous, so if the status is still `pending`, wait a few seconds and try again.
+
+> Hosted on Railway (API, PostgreSQL, Redis and a Celery worker as separate services). This is a demo deployment, so please use test data only.
+
+## Run locally
+
+```bash
+git clone https://github.com/Sai-SushantReddy/OmniCopy.git
+cd OmniCopy
+cp .env.example .env        # add your GROQ_API_KEY and a strong JWT_SECRET
+docker compose up --build
+```
+
+API docs will be at http://localhost:8000/docs (change the port if yours differs).
+
+---
+
 ## Features
 
 - JWT Authentication
@@ -213,4 +239,4 @@ GitHub:
 https://github.com/Sai-SushantReddy
 
 LinkedIn:
-(Add your LinkedIn URL)
+https://www.linkedin.com/in/sai-sushant-reddy-vudem
