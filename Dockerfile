@@ -8,8 +8,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN sed -i 's/\r$//' entrypoint.sh && chmod +x entrypoint.sh
+RUN sed -i '1s/^\xEF\xBB\xBF//; s/\r$//' entrypoint.sh && chmod +x entrypoint.sh
 
 EXPOSE 8000
 
-CMD ["./entrypoint.sh"]
+CMD ["sh", "entrypoint.sh"]
